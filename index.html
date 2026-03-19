@@ -34,7 +34,6 @@ body::before{
 
 main{position:relative;z-index:2}
 
-/* logo */
 .logo{
   position:fixed;
   top:20px;
@@ -45,7 +44,6 @@ main{position:relative;z-index:2}
   z-index:5;
 }
 
-/* audio toggle */
 .audio-toggle{
   position:fixed;
   top:20px;
@@ -59,19 +57,17 @@ main{position:relative;z-index:2}
   cursor:pointer;
 }
 
-/* scene */
 .scene{height:7200vh;position:relative}
 .stage{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;perspective:1200px}
 
 .card3d{
-  width:clamp(252px,60vw,370px);
+  width:clamp(220px,60vw,320px);
   aspect-ratio:4/6;
   position:relative;
   transform-style:preserve-3d;
   transition:transform 0.25s ease-out;
 }
 
-/* glow always on */
 .card3d::before{
   content:"";
   position:absolute;
@@ -89,6 +85,7 @@ main{position:relative;z-index:2}
   backface-visibility:hidden;
   border-radius:16px;
   overflow:hidden;
+  transform:translateZ(0);
 }
 
 .front{background:#1e293b}
@@ -102,11 +99,7 @@ main{position:relative;z-index:2}
   object-fit:cover;
 }
 
-.label{display:none}
-
 .scrollHint{position:absolute;bottom:40px;opacity:.6}
-
-section{padding:48px 18px;max-width:1100px;margin:auto}
 
 </style>
 </head>
@@ -115,7 +108,11 @@ section{padding:48px 18px;max-width:1100px;margin:auto}
 <div class="logo">Pearl Academy</div>
 <button class="audio-toggle" onclick="toggleAudio()">🔊</button>
 
-<audio id="bgAudio" src="audio.mp3" autoplay loop></audio>
+<!-- safer audio setup -->
+<audio id="bgAudio" preload="auto" loop>
+  <source src="audio.mp3" type="audio/mpeg">
+  <source src="audio.ogg" type="audio/ogg">
+</audio>
 
 <main>
 
@@ -138,15 +135,40 @@ section{padding:48px 18px;max-width:1100px;margin:auto}
 </main>
 
 <script>
-
-/* audio control */
 const audio=document.getElementById("bgAudio")
-function toggleAudio(){
-  if(audio.paused){audio.play()}
-  else{audio.pause()}
+
+// check if audio source is valid
+function checkAudio(){
+  if(audio.readyState === 0){
+    console.warn("Audio not loaded. Check file path (audio.mp3)")
+  }
 }
 
-/* 3D card logic */
+window.addEventListener("load", checkAudio)
+
+// start audio on user interaction (reliable)
+function startAudio(){
+  audio.muted = false
+  audio.play().catch(err=>{
+    console.warn("Audio blocked or missing file:", err)
+  })
+}
+
+document.addEventListener("click", startAudio, {once:true})
+document.addEventListener("scroll", startAudio, {once:true})
+
+function toggleAudio(){
+  if(audio.paused){
+    audio.muted = false
+    audio.play().catch(err=>{
+      console.warn("Play failed. Likely file/path issue:", err)
+    })
+  } else {
+    audio.pause()
+  }
+}
+
+// 3D card logic
 const scene=document.getElementById("scene")
 const card=document.getElementById("card")
 const front=document.getElementById("front")
@@ -171,7 +193,7 @@ window.addEventListener("scroll",()=>{
   card.style.transform=`rotateY(${rotation}deg)`
 
   const index=Math.floor(rotation/180)
-  if(index===currentIndex)return
+  if(index===currentIndex) return
   currentIndex=index
 
   const face=index%2
@@ -179,12 +201,15 @@ window.addEventListener("scroll",()=>{
   if(face===0){
     if(editions[index]) front.querySelector("img").src=editions[index].img
     if(editions[index+1]) back.querySelector("img").src=editions[index+1].img
-  }else{
+  } else {
     if(editions[index]) back.querySelector("img").src=editions[index].img
     if(editions[index+1]) front.querySelector("img").src=editions[index+1].img
   }
 })
 
+// tests
+console.assert(typeof toggleAudio === 'function','toggleAudio exists')
+console.assert(TOTAL_SLIDES>0,'slides exist')
 </script>
 
 </body>
