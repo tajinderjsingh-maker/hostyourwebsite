@@ -14,19 +14,38 @@ main{position:relative;z-index:2}
 .logo{position:fixed;top:20px;left:50%;transform:translateX(-50%);font-size:22px;font-weight:600;letter-spacing:0.5px;z-index:5}
 
 /* ----- SCROLL SCENE ----- */
-.scene{height:7200vh;position:relative}
+.scene{height:800vh;position:relative}
 .stage{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;perspective:1200px}
 
 /* ----- 3D CARD (4:6) ----- */
 .card3d{
-  filter:
-    drop-shadow(0 10px 25px rgba(0,0,0,0.5))
-    drop-shadow(0 0 20px rgba(239,68,68,0.35));
   width:clamp(220px,60vw,320px);
   aspect-ratio:4/6;
   position:relative;
   transform-style:preserve-3d;
   transition:transform 0.2s linear;
+}
+
+/* glow using pseudo element (no rendering glitch) */
+.card3d::before{
+  content:"";
+  position:absolute;
+  inset:-10px;
+  border-radius:20px;
+  background:radial-gradient(circle, rgba(239,68,68,0.25), transparent 70%);
+  filter:blur(20px);
+  z-index:-1;
+  opacity:0.6;
+}
+
+.card3d:hover::before{
+  opacity:0.9;
+}
+
+/* slightly stronger glow on hover (desktop) */
+.card3d:hover{
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6))
+          drop-shadow(0 0 30px rgba(239,68,68,0.35));
 }
 
 .face{
@@ -54,10 +73,7 @@ main{position:relative;z-index:2}
 .face::after{content:""}
 
 .label{
-  display:none;
-  position:relative;z-index:2;
-  background:rgba(0,0,0,0.5);
-  padding:6px 10px;border-radius:6px;font-size:14px;
+  display:none; /* hide edition text */
 }
 
 .scrollHint{position:absolute;bottom:40px;text-align:center;opacity:.7;font-size:14px}
