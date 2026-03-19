@@ -3,251 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>100 Editions Celebration</title>
+<title>Newsletter Experience</title>
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#020617;
-  color:white;
-  overflow-x:hidden;
-}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#020617;color:#fff;overflow-x:hidden}
 
-/* animated gradient background */
+/* BG */
 body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:0;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(239,68,68,0.25), transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(59,130,246,0.25), transparent 40%);
-  animation:bgMove 20s linear infinite;
+content:"";position:fixed;inset:0;z-index:0;
+background:
+radial-gradient(circle at 20% 30%, rgba(239,68,68,0.25), transparent 40%),
+radial-gradient(circle at 80% 70%, rgba(59,130,246,0.25), transparent 40%);
+animation:bgMove 25s linear infinite;
 }
-
-@keyframes bgMove{
-  0%{transform:translate(0,0)}
-  50%{transform:translate(-5%,5%)}
-  100%{transform:translate(0,0)}
-}
+@keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-5%,5%)}100%{transform:translate(0,0)}}
 
 main{position:relative;z-index:2}
 
+/* LOGO */
 .logo{
-  position:fixed;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:22px;
-  font-weight:600;
-  z-index:5;
+position:fixed;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+width:min(70vw,420px);
+height:auto;
+z-index:5;
+display:block;
 }
 
-.audio-toggle{
-  position:fixed;
-  top:20px;
-  right:20px;
-  z-index:6;
-  background:rgba(255,255,255,0.1);
-  border:none;
-  padding:10px 14px;
-  border-radius:8px;
-  color:white;
-  cursor:pointer;
+/* optional placeholder styling if image missing */
+.logo:empty::before{
+content:"LOGO";
+display:block;
+text-align:center;
+padding:12px 20px;
+border:1px dashed rgba(255,255,255,0.3);
+border-radius:8px;
+font-size:14px;
+opacity:0.6;
 }
 
-.scene{height:7200vh;position:relative}
-.stage{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;perspective:1200px}
+/* SCENE */
+.scene{height:200vh}
+.stage{
+position:sticky;
+top:0;
+height:100vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+perspective:1200px;
+}
 
+/* CARD */
 .card3d{
-  width:clamp(252px,60vw,370px);
-  aspect-ratio:4/6;
-  position:relative;
-  transform-style:preserve-3d;
-  transition:transform 0.25s ease-out;
+width:252px;
+height:370px;
+transform-style:preserve-3d;
+transition:transform .6s cubic-bezier(.25,.8,.25,1); /* slower, page-like */
+position:relative;
+border:1px solid rgba(255,255,255,0.25);
+border-radius:14px;
+transform-origin:left center; /* key for page feel */
 }
 
+/* stable glow (no glitch) */
 .card3d::before{
-  content:"";
-  position:absolute;
-  inset:-12px;
-  border-radius:20px;
-  background:radial-gradient(circle, rgba(239,68,68,0.25), transparent 70%);
-  filter:blur(20px);
-  z-index:-1;
-  opacity:0.7;
+content:"";
+position:absolute;
+inset:-14px;
+border-radius:20px;
+background:radial-gradient(circle, rgba(239,68,68,.25), transparent 70%);
+filter:blur(25px);
+z-index:-1;
+opacity:0.8;
 }
 
 .face{
-  position:absolute;
-  inset:0;
-  backface-visibility:hidden;
-  border-radius:16px;
-  overflow:hidden;
-  transform:translateZ(0);
+position:absolute;
+inset:0;
+border-radius:14px;
+overflow:hidden;
+backface-visibility:hidden;
+}
+.back{transform:rotateY(180deg)}
+
+.face img,.face video{width:100%;height:100%;object-fit:cover}
+
+/* TEXT BELOW CARD */
+.scrollText{margin-top:20px;font-size:14px;opacity:.7}
+.divider{width:60px;height:1px;background:#fff;opacity:.3;margin:12px auto}
+.arrow{font-size:20px;opacity:.6;animation:arrowMove 1.5s infinite}
+@keyframes arrowMove{0%{transform:translateY(0)}50%{transform:translateY(8px)}100%{transform:translateY(0)}}
+
+/* VIDEO SECTION */
+.video-section{
+padding:80px 20px;
+display:flex;
+flex-direction:column;
+gap:40px; /* bigger gap between blocks */
+align-items:center;
+}
+.video-card{
+width:100%;
+max-width:420px;
+background:rgba(30,41,59,0.6);
+border-radius:16px;
+padding:16px;
+display:flex;
+flex-direction:column;
+gap:12px;
+border:1px solid rgba(255,255,255,0.15);
+backdrop-filter:blur(6px);
 }
 
-.front{background:#1e293b}
-.back{background:#ef4444;transform:rotateY(180deg)}
-
-.face img{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
+.video-placeholder{
+width:100%;
+height:220px;
+background:#1e293b;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
-.scrollHint{position:absolute;bottom:40px;opacity:.6}
+.video-title{
+font-size:15px;
+opacity:.8;
+text-align:center;
+padding:6px 4px;
+}
 
 </style>
 </head>
 <body>
 
-<div class="logo">Pearl Academy</div>
-<button class="audio-toggle" onclick="toggleAudio()">🔊</button>
-
-<!-- safer audio setup -->
-<audio id="bgAudio" preload="auto" loop muted autoplay>
-  <source src="audio.mp3" type="audio/mpeg">
-  <source src="audio.ogg" type="audio/ogg">
-</audio>
+<img src="logo.png" class="logo" alt="Logo">
 
 <main>
 
 <div class="scene" id="scene">
-  <div class="stage">
+<div class="stage">
 
-    <div class="card3d" id="card">
-      <div class="face front" id="front">
-        <img alt="front" id="frontImg">
-        <video id="frontVideo" muted loop playsinline style="display:none;width:100%;height:100%;object-fit:cover;"></video>
-      </div>
-      <div class="face back" id="back">
-        <img alt="back" id="backImg">
-        <video id="backVideo" muted loop playsinline style="display:none;width:100%;height:100%;object-fit:cover;"></video>
-      </div>
-    </div>
+<div class="card3d" id="card">
+  <div class="face front" id="front">
+    <img alt="front">
+    <video muted loop playsinline style="display:none"></video>
+  </div>
+  <div class="face back" id="back">
+    <img alt="back">
+    <video muted loop playsinline style="display:none"></video>
+  </div>
+</div>
 
-    <div class="scrollHint">Scroll</div>
+<div class="scrollText">Scroll Up / Down</div>
+<div class="divider"></div>
+<div class="arrow">↓</div>
+
+</div>
+</div>
+
+<div class="video-section">
+  <div class="video-card">
+    <div class="video-placeholder">Video 1</div>
+    <div class="video-title">Campus Story Highlights</div>
+  </div>
+  <div class="video-card">
+    <div class="video-placeholder">Video 2</div>
+    <div class="video-title">Student Achievements</div>
   </div>
 </div>
 
 </main>
 
 <script>
-const audio=document.getElementById("bgAudio")
-
-// check if audio source is valid
-function checkAudio(){
-  if(audio.readyState === 0){
-    console.warn("Audio not loaded. Check file path (audio.mp3)")
-  }
-}
-
-window.addEventListener("load", ()=>{
-  checkAudio();
-
-  // autoplay muted (always allowed)
-  audio.muted = true;
-  audio.play().then(()=>{
-    setTimeout(()=>{
-      audio.muted = false;
-      audio.play().catch(()=>{
-        console.warn("Unmute blocked until user interaction");
-      });
-    }, 1000);
-  }).catch(()=>{
-    console.warn("Autoplay blocked until interaction");
-  });
-});
-
-// start audio on user interaction (reliable)
-function startAudio(){
-  audio.muted = false
-  audio.play().catch(err=>{
-    console.warn("Audio blocked or missing file:", err)
-  })
-}
-
-document.addEventListener("click", startAudio, {once:true})
-document.addEventListener("scroll", startAudio, {once:true})
-
-function toggleAudio(){
-  if(audio.paused){
-    audio.muted = false
-    audio.play().catch(err=>{
-      console.warn("Play failed. Likely file/path issue:", err)
-    })
-  } else {
-    audio.pause()
-  }
-}
-
-// 3D card logic
-const scene=document.getElementById("scene")
-const card=document.getElementById("card")
-const front=document.getElementById("front")
-const back=document.getElementById("back")
-
-const TOTAL_SLIDES=102 // slide0 to slide101
-const editions=Array.from({length:TOTAL_SLIDES},(_,i)=>{
-  if(i===0){
-    return { type:"video", src:"video1.mp4" }
-  }
-  return { type:"image", src:`images/slide${i}.png` }
+// ----- DATA (0..88 => 89 items) -----
+const TOTAL = 89
+const data = Array.from({length: TOTAL}, (_, i) => {
+  if(i === 86) return {type:'video', src:'video86.mp4'}
+  if(i === 88) return {type:'video', src:'video88.mp4'}
+  return {type:'image', src:`images/slide${i}.webp`}
 })
 
-updateFace(front, editions[0], true)
-updateFace(back, editions[1], false)
+const card = document.getElementById('card')
+const front = document.getElementById('front')
+const back = document.getElementById('back')
 
-let currentIndex=-1
-
-window.addEventListener("scroll",()=>{
-  const rect=scene.getBoundingClientRect()
-  const progress=Math.min(Math.max(-rect.top/(rect.height-window.innerHeight),0),1)
-
-  const SPEED=0.6
-  const rotation=progress*((editions.length-1)*180)*SPEED
-  card.style.transform=`rotateY(${rotation}deg)`
-
-  const index=Math.floor(rotation/180)
-  if(index===currentIndex) return
-  currentIndex=index
-
-  const face=index%2
-
-  if(face===0){
-    if(editions[index]) updateFace(front, editions[index], true)
-    if(editions[index+1]) updateFace(back, editions[index+1], false)
+function setFace(el, item){
+  const img = el.querySelector('img')
+  const vid = el.querySelector('video')
+  if(item.type === 'video'){
+    img.style.display = 'none'
+    vid.style.display = 'block'
+    if(vid.src !== item.src) vid.src = item.src
+    vid.currentTime = 0
+    vid.play().catch(()=>{})
   } else {
-    if(editions[index]) updateFace(back, editions[index], false)
-    if(editions[index+1]) updateFace(front, editions[index+1], true)
-  }
-})
-
-function updateFace(faceEl, data, isFront){
-  const img = faceEl.querySelector("img")
-  const video = faceEl.querySelector("video")
-
-  if(data.type === "video"){
-    img.style.display = "none"
-    video.style.display = "block"
-    video.src = data.src
-    video.currentTime = 0
-    video.play().catch(()=>{})
-  } else {
-    video.pause()
-    video.style.display = "none"
-    img.style.display = "block"
-    img.src = data.src
+    vid.pause()
+    vid.style.display = 'none'
+    img.style.display = 'block'
+    img.src = item.src
   }
 }
 
-// tests
-console.assert(typeof toggleAudio === 'function','toggleAudio exists')
-console.assert(TOTAL_SLIDES>0,'slides exist')
+// init
+setFace(front, data[0])
+setFace(back, data[1])
+
+let index = 0
+let locked = false
+
+function render(){
+  const rotation = index * 180
+
+  const offset = 126
+  card.style.transform = `translateX(${offset}px) rotateY(${rotation}deg) translateX(-${offset}px)`
+
+  if(index % 2 === 0){
+    if(data[index]) setFace(front, data[index])
+    if(data[index+1]) setFace(back, data[index+1])
+  } else {
+    if(data[index]) setFace(back, data[index])
+    if(data[index+1]) setFace(front, data[index+1])
+  }
+}
+
+function next(){
+  if(index < TOTAL-1){ index++; render() }
+}
+function prev(){
+  if(index > 0){ index--; render() }
+}
+
+// ----- STEP SCROLL (snap per flip) -----
+window.addEventListener('wheel', (e)=>{
+  if(locked) return
+  locked = true
+  if(e.deltaY > 0) next()
+  else prev()
+  setTimeout(()=> locked = false, 400)
+})
+
+// touch support
+let startY = 0
+window.addEventListener('touchstart', e => startY = e.touches[0].clientY)
+window.addEventListener('touchend', e => {
+  const endY = e.changedTouches[0].clientY
+  if(Math.abs(startY - endY) < 30) return
+  if(endY < startY) next()
+  else prev()
+})
+
+// small preload of next asset
+function preload(i){
+  if(!data[i]) return
+  if(data[i].type === 'image'){
+    const im = new Image(); im.src = data[i].src
+  }
+}
+setInterval(()=> preload(index+1), 1000)
+
+// sanity tests
+console.assert(data.length === TOTAL, 'data length mismatch')
 </script>
 
 </body>
