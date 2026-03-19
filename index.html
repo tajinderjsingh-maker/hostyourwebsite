@@ -189,9 +189,9 @@ const card=document.getElementById("card")
 const front=document.getElementById("front")
 const back=document.getElementById("back")
 
-const TOTAL_SLIDES=100
+const TOTAL_SLIDES=102 // slide0 to slide101
 const editions=Array.from({length:TOTAL_SLIDES},(_,i)=>({
-  img:`images/slide${i+1}.jpg`
+  img:`images/slide${i}.png`
 }))
 
 front.querySelector("img").src=editions[0].img
