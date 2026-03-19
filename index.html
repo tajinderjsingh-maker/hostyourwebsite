@@ -14,116 +14,52 @@ main{position:relative;z-index:2}
 .logo{position:fixed;top:20px;left:50%;transform:translateX(-50%);font-size:22px;font-weight:600;letter-spacing:0.5px;z-index:5}
 
 /* ----- SCROLL SCENE ----- */
-.scene{
-height:300vh; /* long scroll area */
-position:relative;
-}
+.scene{height:800vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center;perspective:1200px}
 
-.stage{
-position:sticky;
-top:0;
-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-perspective:1200px;
-}
-
-/* ----- 3D CARD ----- */
+/* ----- 3D CARD (4:6) ----- */
 .card3d{
-width:clamp(220px, 60vw, 320px);
-aspect-ratio: 4 / 6; /* perfect 4:6 ratio */
-position:relative;
-transform-style:preserve-3d;
-transition:transform 0.2s linear;
+  width:clamp(220px,60vw,320px);
+  aspect-ratio:4/6;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform 0.2s linear;
 }
 
 .face{
-position:absolute;
-width:100%;
-height:100%;
-backface-visibility:hidden;
-border-radius:16px;
-overflow:hidden;
-display:flex;
-flex-direction:column;
-justify-content:flex-end;
-padding:16px;
-font-weight:bold;
+  position:absolute;inset:0;
+  backface-visibility:hidden;
+  border-radius:16px;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:16px;font-weight:bold;
 }
 
-.front{
-background:#1e293b;
-}
-
-.back{
-background:#ef4444;
-transform:rotateY(180deg);
-}
+.front{background:#1e293b}
+.back{background:#ef4444;transform:rotateY(180deg)}
 
 .face img{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-object-fit:cover;
-display:block;
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;
 }
 
-/* fallback placeholder if image missing */
+/* fallback (only if image fails) */
 .face::before{
-content:"";
-position:absolute;
-inset:0;
-background:linear-gradient(135deg,#1e293b,#334155);
-z-index:-1;
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,#1e293b,#334155);
+  z-index:-1;
 }
-
-.face::after{
-content:"";
-}
-
-/* placeholder visual */
-.face::before{
-content:"";
-position:absolute;
-inset:0;
-background:linear-gradient(135deg,#1e293b,#334155);
-}
-
-.face::after{
-content:"Image Placeholder";
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-font-size:14px;
-opacity:0.6;
-letter-spacing:0.5px;
-}
+.face::after{content:""}
 
 .label{
-position:relative;
-z-index:2;
-background:rgba(0,0,0,0.5);
-padding:6px 10px;
-border-radius:6px;
-font-size:14px;
+  position:relative;z-index:2;
+  background:rgba(0,0,0,0.5);
+  padding:6px 10px;border-radius:6px;font-size:14px;
 }
 
-/* instruction text */
-.scrollHint{
-position:absolute;
-bottom:40px;
-text-align:center;
-opacity:.7;
-font-size:14px;
-}
+.scrollHint{position:absolute;bottom:40px;text-align:center;opacity:.7;font-size:14px}
 
 /* ---- other sections ---- */
 section{padding:48px 18px;max-width:1100px;margin:auto}
-
 .timeline{display:grid;grid-template-columns:1fr;gap:16px}
 .card{background:rgba(30,41,59,.9);padding:16px;border-radius:14px}
 .card-media{height:140px;border-radius:10px;margin-bottom:12px}
@@ -144,13 +80,12 @@ footer{padding:40px 20px;background:rgba(2,6,23,.9);text-align:center}
 .share{background:#22c55e;border:none;padding:14px 22px;border-radius:10px;font-size:16px;cursor:pointer}
 
 @media (min-width:600px){
-.timeline{grid-template-columns:repeat(2,1fr)}
-.gallery{grid-template-columns:repeat(3,1fr)}
+  .timeline{grid-template-columns:repeat(2,1fr)}
+  .gallery{grid-template-columns:repeat(3,1fr)}
 }
-
 @media (min-width:900px){
-.timeline{grid-template-columns:repeat(3,1fr)}
-.gallery{grid-template-columns:repeat(4,1fr)}
+  .timeline{grid-template-columns:repeat(3,1fr)}
+  .gallery{grid-template-columns:repeat(4,1fr)}
 }
 </style>
 </head>
@@ -162,156 +97,128 @@ footer{padding:40px 20px;background:rgba(2,6,23,.9);text-align:center}
 
 <!-- 3D SCROLL CARD EXPERIENCE -->
 <div class="scene" id="scene">
+  <div class="stage">
 
-<div class="stage">
+    <div class="card3d" id="card">
+      <div class="face front" id="front">
+        <img alt="front">
+        <div class="label">Edition 1</div>
+      </div>
+      <div class="face back" id="back">
+        <img alt="back">
+        <div class="label">Edition 2</div>
+      </div>
+    </div>
 
-<div class="card3d" id="card">
-
-<div class="face front" id="front">
-<img src="https://placehold.co/400x600/png">
-<div class="label">Edition 1</div>
-</div>
-
-<div class="face back" id="back">
-<img src="https://placehold.co/400x600/png">
-<div class="label">Edition 2</div>
-</div>
-
-</div>
-
-<div class="scrollHint">Scroll to explore editions</div>
-
-</div>
-
+    <div class="scrollHint">Scroll to explore editions</div>
+  </div>
 </div>
 
 <section id="journey">
-<h2>Our Journey</h2>
-<div class="timeline">
-
-<div class="card">
-<div class="card-media color1"></div>
-<p>Edition 1 — The beginning of our newsletter journey.</p>
-</div>
-
-<div class="card">
-<div class="card-media color2"></div>
-<p>Student achievements and academic milestones.</p>
-</div>
-
-<div class="card">
-<div class="card-media color3"></div>
-<p>Celebrating community events and campus life.</p>
-</div>
-
-</div>
+  <h2>Our Journey</h2>
+  <div class="timeline">
+    <div class="card">
+      <div class="card-media color1"></div>
+      <p>Edition 1 — The beginning of our newsletter journey.</p>
+    </div>
+    <div class="card">
+      <div class="card-media color2"></div>
+      <p>Student achievements and academic milestones.</p>
+    </div>
+    <div class="card">
+      <div class="card-media color3"></div>
+      <p>Celebrating community events and campus life.</p>
+    </div>
+  </div>
 </section>
 
 <section>
-<h2>Campus Moments</h2>
-<div class="gallery">
-<div class="gallery-card g1"></div>
-<div class="gallery-card g2"></div>
-<div class="gallery-card g3"></div>
-<div class="gallery-card g4"></div>
-</div>
+  <h2>Campus Moments</h2>
+  <div class="gallery">
+    <div class="gallery-card g1"></div>
+    <div class="gallery-card g2"></div>
+    <div class="gallery-card g3"></div>
+    <div class="gallery-card g4"></div>
+  </div>
 </section>
 
 <section>
-<h2>Message from the Community</h2>
-<div class="community">Community voices & messages will appear here</div>
+  <h2>Message from the Community</h2>
+  <div class="community">Community voices & messages will appear here</div>
 </section>
 
 <footer>
-<h3>Thank you for being part of our journey</h3>
-<button class="share" onclick="share()">Share on WhatsApp</button>
+  <h3>Thank you for being part of our journey</h3>
+  <button class="share" onclick="share()">Share on WhatsApp</button>
 </footer>
 
 </main>
 
 <script>
-
 function share(){
-const url=window.location.href
-const text="Explore the 100th Edition Celebration"
-window.open(`https://wa.me/?text=${encodeURIComponent(text+' '+url)}`)
+  const url=window.location.href
+  const text="Explore the 100th Edition Celebration"
+  window.open(`https://wa.me/?text=${encodeURIComponent(text+' '+url)}`)
 }
 
 /* ----- SCROLL CONTROLLED 3D CARD ----- */
-
 const scene=document.getElementById("scene")
 const card=document.getElementById("card")
 const front=document.getElementById("front")
 const back=document.getElementById("back")
 
-const editions=[
-{title:"Edition 1",img:"slide1.png"},
-{title:"Edition 2",img:"images/edition2.jpg"},
-{title:"Edition 3",img:"images/edition3.jpg"},
-{title:"Edition 4",img:"images/edition4.jpg"},
-{title:"Edition 5",img:"images/edition5.jpg"}
-]
+// AUTO-GENERATED from images/slide1.jpg ... slide100.jpg
+const TOTAL_SLIDES = 100
+const editions = Array.from({length: TOTAL_SLIDES}, (_,i)=>({
+  title: `Edition ${i+1}`,
+  img: `images/slide${i+1}.jpg`
+}))
 
-/* initialize first two faces */
-front.querySelector("img").src=editions[0].img
-front.querySelector(".label").innerText=editions[0].title
+// init first pair
+front.querySelector("img").src = editions[0].img
+front.querySelector(".label").innerText = editions[0].title
+back.querySelector("img").src = editions[1].img
+back.querySelector(".label").innerText = editions[1].title
 
-back.querySelector("img").src=editions[1].img
-back.querySelector(".label").innerText=editions[1].title
-
-let currentIndex=0
+let currentIndex = -1
 
 window.addEventListener("scroll",()=>{
+  const rect = scene.getBoundingClientRect()
+  const progress = Math.min(Math.max(-rect.top/(rect.height-window.innerHeight),0),1)
 
-const rect=scene.getBoundingClientRect()
-const progress=Math.min(Math.max(-rect.top/(rect.height-window.innerHeight),0),1)
+  // use (length-1) to avoid overshoot
+  const rotation = progress * ((editions.length - 1) * 180)
+  card.style.transform = `rotateY(${rotation}deg)`
 
-/* rotation driven by scroll */
-const rotation=progress*(editions.length*180)
-card.style.transform=`rotateY(${rotation}deg)`
+  // which 180deg segment
+  const index = Math.floor(rotation/180)
+  if(index === currentIndex) return
+  currentIndex = index
 
-/* which 180deg segment we are in */
-const index=Math.floor(rotation/180)
+  const faceVisible = index % 2
 
-if(index!==currentIndex){
-
-currentIndex=index
-
-/* determine which face is visible */
-const faceVisible=index % 2
-
-if(faceVisible===0){
-
-/* front is visible */
-if(editions[index]){
-front.querySelector("img").src=editions[index].img
-front.querySelector(".label").innerText=editions[index].title
-}
-
-if(editions[index+1]){
-back.querySelector("img").src=editions[index+1].img
-back.querySelector(".label").innerText=editions[index+1].title
-}
-
-}else{
-
-/* back is visible */
-if(editions[index]){
-back.querySelector("img").src=editions[index].img
-back.querySelector(".label").innerText=editions[index].title
-}
-
-if(editions[index+1]){
-front.querySelector("img").src=editions[index+1].img
-front.querySelector(".label").innerText=editions[index+1].title
-}
-
-}
-
-}
-
+  if(faceVisible === 0){
+    // front visible
+    if(editions[index]){
+      front.querySelector("img").src = editions[index].img
+      front.querySelector(".label").innerText = editions[index].title
+    }
+    if(editions[index+1]){
+      back.querySelector("img").src = editions[index+1].img
+      back.querySelector(".label").innerText = editions[index+1].title
+    }
+  } else {
+    // back visible
+    if(editions[index]){
+      back.querySelector("img").src = editions[index].img
+      back.querySelector(".label").innerText = editions[index].title
+    }
+    if(editions[index+1]){
+      front.querySelector("img").src = editions[index+1].img
+      front.querySelector(".label").innerText = editions[index+1].title
+    }
+  }
 })
-
 </script>
 
 </body>
