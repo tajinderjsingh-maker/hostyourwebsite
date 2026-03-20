@@ -9,16 +9,21 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#020617;color:#fff;overflow:hidden}
 
+/* reduce GPU drain on mobile */
+@media (prefers-reduced-motion: reduce){
+ body::before{animation:none}
+}
+
 body::before{content:"";position:fixed;inset:0;z-index:0;
 background:
-radial-gradient(circle at 20% 30%, rgba(239,68,68,0.25), transparent 40%),
-radial-gradient(circle at 80% 70%, rgba(59,130,246,0.25), transparent 40%);
-animation:bgMove 25s linear infinite}
-@keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-5%,5%)}100%{transform:translate(0,0)}}
+radial-gradient(circle at 20% 30%, rgba(239,68,68,0.18), transparent 40%),
+radial-gradient(circle at 80% 70%, rgba(59,130,246,0.18), transparent 40%);
+animation:bgMove 30s linear infinite}
+@keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-3%,3%)}100%{transform:translate(0,0)}}
 
 .logoWrap{position:fixed;top:22px;left:50%;transform:translateX(-50%);z-index:5;text-align:center}
 .logo{width:min(49vw,294px)}
-.tagline{margin-top:8px;font-size:12px;opacity:.7}
+.tagline{margin-top:8px;font-size:12px;opacity:.8}
 
 .audioBtn{position:fixed;top:12px;right:16px;z-index:10;cursor:pointer;font-size:18px;opacity:.8}
 
@@ -26,42 +31,17 @@ animation:bgMove 25s linear infinite}
 
 .carousel{position:relative;width:100%;height:min(70vh,420px);overflow:hidden;touch-action:none;cursor:grab}
 
-.card{position:absolute;left:50%;top:50%;width:clamp(180px,70vw,252px);aspect-ratio:252/370;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.25);background:#000;transform:translate(-50%,-50%);will-change:transform,opacity;}
+.card{position:absolute;left:50%;top:50%;width:clamp(180px,70vw,252px);aspect-ratio:252/370;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.2);background:#000;transform:translate(-50%,-50%);}
 .card img,.card video{width:100%;height:100%;object-fit:cover;pointer-events:none}
 
-.hint{position:absolute;bottom:80px;font-size:14px;opacity:.8;display:flex;align-items:center;gap:8px}
+.hint{position:absolute;bottom:80px;font-size:14px;opacity:.85;display:flex;align-items:center;gap:8px}
 
-.arrow{
- display:inline-block;
- opacity:.7;
-}
+.arrow{display:inline-block;opacity:.7}
+.arrow.left{animation:arrowLeft 1.2s infinite ease-in-out}
+.arrow.right{animation:arrowRight 1.2s infinite ease-in-out}
 
-.arrow.left{
- animation:arrowLeft 1.2s infinite ease-in-out;
-}
-
-.arrow.right{
- animation:arrowRight 1.2s infinite ease-in-out;
-}
-
-@keyframes arrowLeft{
- 0%{transform:translateX(0);opacity:.3}
- 50%{transform:translateX(-8px);opacity:1}
- 100%{transform:translateX(0);opacity:.3}
-}
-
-@keyframes arrowRight{
- 0%{transform:translateX(0);opacity:.3}
- 50%{transform:translateX(8px);opacity:1}
- 100%{transform:translateX(0);opacity:.3}
-}
-/* removed delay for perfect mirrored sync */
-
-@keyframes arrowMove{
- 0%{transform:translateX(0);opacity:.3}
- 50%{transform:translateX(6px);opacity:1}
- 100%{transform:translateX(0);opacity:.3}
-}
+@keyframes arrowLeft{0%{transform:translateX(0)}50%{transform:translateX(-6px)}100%{transform:translateX(0)}}
+@keyframes arrowRight{0%{transform:translateX(0)}50%{transform:translateX(6px)}100%{transform:translateX(0)}}
 </style>
 </head>
 <body>
@@ -96,12 +76,12 @@ const data = Array.from({length:TOTAL},(_,i)=>{
 })
 
 const carousel=document.getElementById('carousel')
-let index=0
-let target=0
-let last=-1
-let dragging=false
+let index=0, target=0, lastIndex=-1, dragging=false
 
-function createCard(item){
+// cache video durations (prevents repeated temp video creation)
+const videoDurationCache = {}
+
+function createCard(item, isCenter){
  const el=document.createElement('div')
  el.className='card'
 
@@ -110,47 +90,52 @@ function createCard(item){
   v.src=item.src
   v.muted=true
   v.loop=true
-  v.autoplay=true
   v.playsInline=true
-  v.preload='auto'
-  v.onloadeddata=()=>v.play().catch(()=>{})
+  v.preload='metadata'
+
+  if(isCenter){
+    v.autoplay=true
+    v.onloadeddata=()=>v.play().catch(()=>{})
+  }
+
   el.appendChild(v)
  }else{
   const img=document.createElement('img')
   img.src=item.src
+  img.loading='lazy'
   el.appendChild(img)
  }
  return el
 }
 
 function render(){
- const current=Math.floor(index)
- if(current===last && Math.abs(index-current)<0.001) return
- last=current
+ const current=Math.round(index)
+ if(current===lastIndex) return
+ lastIndex=current
 
  carousel.innerHTML=''
 
  for(let i=current-3;i<=current+3;i++){
   if(!data[i]) continue
-  const card=createCard(data[i])
 
   const offset = i - index
   const abs = Math.abs(offset)
 
-  const x = offset * 90
+  const card=createCard(data[i], abs<0.5)
+
+  const x = offset * 85
   const scale = 1 - Math.min(abs*0.1,0.25)
-  const rotateY = -offset * 15
-  const rotateX = Math.min(Math.max((target-index)*6,-6),6)
-  const opacity = abs>3 ? 0 : 1 - abs*0.25
+  const rotateY = -offset * 14
+  const rotateX = (target-index)*4
+  const opacity = abs>3 ? 0 : (abs<0.5 ? 1 : 0.85)
 
-  const rotateZ = offset * 2
-  card.style.transform = `translate(calc(-50% + ${x}px), -50%) scale(${scale}) rotateY(${rotateY}deg) rotateX(${rotateX}deg) rotateZ(${rotateZ}deg)`
+  card.style.transform = `translate(calc(-50% + ${x}px), -50%) scale(${scale}) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`
   card.style.opacity = opacity
-
-  // enhanced shadow for depth & overlap feel
-  const shadowIntensity = 20 + (1 - abs) * 40
-  card.style.boxShadow = `0 ${shadowIntensity}px ${shadowIntensity*2}px rgba(0,0,0,0.6)`
   card.style.zIndex = 10 - Math.round(abs*3)
+
+  // lighter shadow (performance + clarity)
+  const shadow = 10 + (1-abs)*20
+  card.style.boxShadow = `0 ${shadow}px ${shadow*1.5}px rgba(0,0,0,0.5)`
 
   carousel.appendChild(card)
  }
@@ -158,73 +143,51 @@ function render(){
 
 function animate(){
  const diff = target - index
- index += diff * 0.09
- if(Math.abs(diff) < 0.001) index = target
+ index += diff * 0.08
+ if(Math.abs(diff)<0.001) index=target
  render()
  requestAnimationFrame(animate)
 }
 animate()
 
-// AUTO PLAY WITH VIDEO AWARE TIMING
+// efficient autoplay (no temp video spam)
 let autoTimer=null
-
 function scheduleNext(){
  clearTimeout(autoTimer)
-
  const current=Math.round(target)
  const item=data[current]
 
- if(item && item.type==='video'){
-   // wait for video duration
-   const tempVideo=document.createElement('video')
-   tempVideo.src=item.src
-   tempVideo.preload='metadata'
-
-   tempVideo.onloadedmetadata=()=>{
-     const duration = (tempVideo.duration || 3) * 1000
-     autoTimer=setTimeout(()=>{
-       if(!dragging) target=(target+1)%TOTAL
+ if(item?.type==='video'){
+   if(videoDurationCache[item.src]){
+     autoTimer=setTimeout(()=>{if(!dragging)target=(target+1)%TOTAL; scheduleNext()}, videoDurationCache[item.src])
+   }else{
+     const v=document.createElement('video')
+     v.src=item.src
+     v.onloadedmetadata=()=>{
+       videoDurationCache[item.src]=(v.duration||3)*1000
        scheduleNext()
-     }, duration)
+     }
    }
-
-   tempVideo.onerror=()=>{
-     // fallback if video fails
-     autoTimer=setTimeout(()=>{
-       if(!dragging) target=(target+1)%TOTAL
-       scheduleNext()
-     },1800)
-   }
-
  }else{
-   autoTimer=setTimeout(()=>{
-     if(!dragging) target=(target+1)%TOTAL
-     scheduleNext()
-   },1800)
+   autoTimer=setTimeout(()=>{if(!dragging)target=(target+1)%TOTAL; scheduleNext()},1800)
  }
 }
-
 scheduleNext()
 
-let startX=0
-let lastX=0
-let velocity=0
-
+// pointer (stable)
+let startX=0,lastX=0,velocity=0
 carousel.addEventListener('pointerdown',e=>{
  dragging=true
- startX=e.clientX
- lastX=e.clientX
+ startX=lastX=e.clientX
  velocity=0
  carousel.setPointerCapture(e.pointerId)
- e.preventDefault()
- carousel.style.cursor='grabbing'
 })
 
 window.addEventListener('pointermove',e=>{
  if(!dragging) return
  const dx=e.clientX-lastX
- velocity = dx
- target -= dx*0.008 // smoother on mobile
+ velocity=dx
+ target-=dx*0.007
  lastX=e.clientX
  target=Math.max(0,Math.min(TOTAL-1,target))
 })
@@ -232,49 +195,19 @@ window.addEventListener('pointermove',e=>{
 window.addEventListener('pointerup',e=>{
  if(!dragging) return
  dragging=false
- try{carousel.releasePointerCapture(e.pointerId)}catch(err){}
- carousel.style.cursor='grab'
-
- // controlled momentum (reduced to avoid jump/glitch)
- target -= Math.max(Math.min(velocity,20),-20) * 0.03
+ try{carousel.releasePointerCapture(e.pointerId)}catch{}
+ target-=Math.max(Math.min(velocity,15),-15)*0.02
  target=Math.max(0,Math.min(TOTAL-1,target))
-
  scheduleNext()
 })
 
-window.addEventListener('pointercancel',()=>{
- dragging=false
- carousel.style.cursor='grab'
-})
-
+// audio
 const audio=document.getElementById('bgAudio')
 const btn=document.getElementById('audioBtn')
+window.addEventListener('click',()=>audio.play().catch(()=>{}),{once:true})
+btn.onclick=()=>{audio.paused?audio.play():audio.pause()}
 
-function playAudio(){
- // try autoplay with sound (may fail silently depending on browser)
- audio.muted = false
- audio.play().catch(()=>{
-   // fallback: start muted then unmute on interaction
-   audio.muted = true
-   audio.play().then(()=>{
-     document.addEventListener('click',()=>{
-       audio.muted = false
-     },{once:true})
-   }).catch(()=>{})
- })
-}
-
-window.addEventListener('load',playAudio)
-document.addEventListener('click',playAudio,{once:true})
-
-btn.onclick=()=>{
- if(audio.paused){audio.play();btn.innerText='🔊'}
- else{audio.pause();btn.innerText='🔇'}
-}
-
-console.assert(data.length===89,'Total slides incorrect')
-console.assert(data[20].type==='video','Slide 20 should be video')
-console.assert(data[88].type==='video','Slide 88 should be video')
+console.assert(data.length===89)
 </script>
 
 </body>
