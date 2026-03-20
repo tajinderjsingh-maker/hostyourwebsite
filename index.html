@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Voice of Pearl</title>
+<title>Newsletter Experience</title>
 
 <style>
 *{box-sizing:border-box}
@@ -16,7 +16,7 @@ radial-gradient(circle at 80% 70%, rgba(59,130,246,0.25), transparent 40%);
 animation:bgMove 25s linear infinite}
 @keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-5%,5%)}100%{transform:translate(0,0)}}
 
-.logoWrap{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:5;text-align:center}
+.logoWrap{position:fixed;top:22px;left:50%;transform:translateX(-50%);z-index:5;text-align:center}
 .logo{width:min(49vw,294px)}
 .tagline{margin-top:8px;font-size:12px;opacity:.7}
 
@@ -24,7 +24,7 @@ animation:bgMove 25s linear infinite}
 
 .stage{height:100vh;display:flex;align-items:center;justify-content:center;perspective:1200px;position:relative;z-index:2}
 
-.carousel{position:relative;width:100%;height:min(70vh,420px);overflow:hidden;touch-action:pan-y;cursor:grab}
+.carousel{position:relative;width:100%;height:min(70vh,420px);overflow:hidden;touch-action:none;cursor:grab}
 
 .card{position:absolute;left:50%;top:50%;width:clamp(180px,70vw,252px);aspect-ratio:252/370;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.25);background:#000;transform:translate(-50%,-50%);will-change:transform,opacity;}
 .card img,.card video{width:100%;height:100%;object-fit:cover;pointer-events:none}
@@ -214,28 +214,37 @@ carousel.addEventListener('pointerdown',e=>{
  dragging=true
  startX=e.clientX
  lastX=e.clientX
+ velocity=0
+ carousel.setPointerCapture(e.pointerId)
+ e.preventDefault()
  carousel.style.cursor='grabbing'
 })
 
 window.addEventListener('pointermove',e=>{
  if(!dragging) return
  const dx=e.clientX-lastX
- velocity=dx
- target -= dx*0.01
+ velocity = dx
+ target -= dx*0.008 // smoother on mobile
  lastX=e.clientX
  target=Math.max(0,Math.min(TOTAL-1,target))
 })
 
-window.addEventListener('pointerup',()=>{
+window.addEventListener('pointerup',e=>{
  if(!dragging) return
  dragging=false
+ try{carousel.releasePointerCapture(e.pointerId)}catch(err){}
  carousel.style.cursor='grab'
 
- // momentum
- target -= velocity*0.05
+ // controlled momentum (reduced to avoid jump/glitch)
+ target -= Math.max(Math.min(velocity,20),-20) * 0.03
  target=Math.max(0,Math.min(TOTAL-1,target))
 
  scheduleNext()
+})
+
+window.addEventListener('pointercancel',()=>{
+ dragging=false
+ carousel.style.cursor='grab'
 })
 
 const audio=document.getElementById('bgAudio')
