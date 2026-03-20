@@ -3,18 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta property="og:title" content="Your Website Title" />
-<meta property="og:description" content="A brief description of your site." />
-<meta property="og:image" content="https://yourusername.github.io" />
-<meta property="og:image:type" content="image/png" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://yourusername.github.io" />
-<meta property="og:type" content="website" />
-<title>Voice of Pearl - Newsletter</title>
+<title>Newsletter Experience</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#020617;color:#fff;overflow-x:hidden}
+body{margin:0;font-family:Arial;background:#020617;color:#fff;overflow-x:hidden}
 
 /* BG */
 body::before{
@@ -26,250 +19,181 @@ animation:bgMove 25s linear infinite;
 }
 @keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-5%,5%)}100%{transform:translate(0,0)}}
 
-main{position:relative;z-index:2}
+.logoWrap{
+position:fixed;top:20px;left:50%;transform:translateX(-50%);
+display:flex;flex-direction:column;align-items:center;z-index:5;
+}
 
 .logo{
-position:fixed;top:20px;left:50%;transform:translateX(-50%);
-width:min(49vw,294px);z-index:5;
+width:min(49vw,294px);
 }
 
+.tagline{
+margin-top:6px;
+font-size:12px;
+opacity:0.7;
+letter-spacing:0.5px;
+}
+
+/* STAGE */
 .stage{
-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;perspective:1200px;
+height:100vh;display:flex;align-items:center;justify-content:center;
+perspective:1200px;position:relative;z-index:2;
 }
 
-/* CARD FIXED (no glitch) */
-.card3d{
-width:252px;height:370px;
-position:relative;
-transform-style:preserve-3d;
-transition:transform .6s cubic-bezier(.25,.8,.25,1);
+/* CAROUSEL */
+.carousel{
+display:flex;align-items:center;justify-content:center;position:relative;
+width:100%;height:400px;
+}
+
+.card{
+position:absolute;width:252px;height:370px;border-radius:14px;
+overflow:hidden;transition:all .5s cubic-bezier(.2,.8,.2,1);
 border:1px solid rgba(255,255,255,0.25);
-border-radius:14px;
-will-change: transform;
+background:#000;
 }
 
-/* stable glow */
-.card3d::before{
-content:"";position:absolute;inset:-14px;border-radius:20px;
-background:radial-gradient(circle, rgba(239,68,68,.25), transparent 70%);
-filter:blur(25px);z-index:-1;opacity:0.8;
+.card img,.card video{width:100%;height:100%;object-fit:cover}
+
+.center{transform:translateX(0) scale(1);z-index:3;opacity:1}
+.left{transform:translateX(-140px) scale(.88) rotateY(12deg);z-index:2;opacity:.6}
+.right{transform:translateX(140px) scale(.88) rotateY(-12deg);z-index:2;opacity:.6}
+.hiddenL{transform:translateX(-260px) scale(.8);opacity:0}
+.hiddenR{transform:translateX(260px) scale(.8);opacity:0}
+
+/* shadow overlap */
+.card::after{
+content:"";position:absolute;inset:0;
+box-shadow:0 20px 40px rgba(0,0,0,0.6);
+pointer-events:none;
 }
 
-.face{
-position:absolute;inset:0;border-radius:14px;overflow:hidden;
-backface-visibility:hidden;
-transform:translateZ(0);
-}
-.back{transform:rotateY(180deg)}
-.face img,.face video{width:100%;height:100%;object-fit:cover}
-
-/* fit specific video (slide86) without cropping */
-.face video[src*="video86.mp4"]{
-  transform: none;
-  object-fit: contain; /* show full frame */
-  background:#000; /* letterbox if needed */
+.hint{
+position:absolute;bottom:40px;font-size:14px;opacity:.6;
 }
 
-.scrollText{margin-top:44px;font-size:14px;opacity:.7}
-.divider{width:60px;height:1px;background:#fff;opacity:.3;margin:12px auto}
-.arrow{font-size:20px;opacity:.6}
-
+/* VIDEO SECTION */
+/* VIDEO SECTION */
 .video-section{
-padding:80px 20px;display:flex;flex-direction:column;gap:60px;align-items:center;
+position:relative;
+width:100%;
+padding:40px 20px;
+display:flex;
+gap:20px;
+overflow-x:auto;
+z-index:2;
+margin-top:20px;
 }
 .video-card{
-width:100%;max-width:420px;background:rgba(30,41,59,0.6);
-border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;
-border:1px solid rgba(255,255,255,0.15);
+min-width:260px;background:#111;border-radius:12px;padding:10px;
 }
-.video-title{text-align:center;opacity:.8}
+.video-card iframe{width:100%;height:150px;border-radius:8px}
+.video-title{text-align:center;font-size:12px;opacity:.7}
+
 </style>
 </head>
 <body>
-<script>
-// hide mobile address bar
-window.addEventListener('load',()=>{
-  setTimeout(()=>window.scrollTo(0,1),100)
-})
-</script>
 
-<img src="logo.png" class="logo">
-
-<main>
+<div class="logoWrap">
+  <img src="logo.png" class="logo">
+  <div class="tagline">Celebrating 100 weeks</div>
+</div>
 
 <div class="stage">
 
-<div class="card3d" id="card">
-<div class="face front" id="front">
-<img><video muted loop playsinline style="display:none"></video>
-</div>
-<div class="face back" id="back">
-<img><video muted loop playsinline style="display:none"></video>
-</div>
-</div>
-
-<div class="scrollText">Scroll Up / Down</div>
-<div class="divider"></div>
-<div class="arrow">↓</div>
+<div class="carousel" id="carousel"></div>
+<div class="hint">← Swipe →</div>
 
 </div>
 
-<div class="video-section" id="videos">
-
+<div class="video-section">
 <div class="video-card">
-<iframe width="100%" height="220" src="https://www.youtube.com/embed/KHx3EGSJoAs" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<div class="video-title">School of Complete Professionals | Pearl Academy</div>
+<iframe src="https://www.youtube.com/embed/KHx3EGSJoAs" allowfullscreen></iframe>
+<div class="video-title">School of Complete Professionals</div>
 </div>
-
 <div class="video-card">
-<iframe width="100%" height="220" src="https://www.youtube.com/embed/jF9RMBgBD3M" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<div class="video-title">Aaj Ki Rani: An Ode to the Women of Today</div>
+<iframe src="https://www.youtube.com/embed/jF9RMBgBD3M" allowfullscreen></iframe>
+<div class="video-title">Aaj Ki Rani</div>
 </div>
-
 </div>
-
-</main>
 
 <script>
-const TOTAL = 89
-const data = Array.from({length: TOTAL}, (_, i) => {
-  if(i === 86) return {type:'video', src:'video86.mp4'}
-  if(i === 88) return {type:'video', src:'video88.mp4'}
-  return {type:'image', src:`images/slide${i}.webp`}
+const TOTAL=89
+const data=Array.from({length:TOTAL},(_,i)=>{
+ if(i===86) return {type:'video',src:'video86.mp4'}
+ if(i===88) return {type:'video',src:'video88.mp4'}
+ return {type:'image',src:`images/slide${i}.webp`}
 })
 
-const card = document.getElementById('card')
-const front = document.getElementById('front')
-const back = document.getElementById('back')
+const carousel=document.getElementById('carousel')
+let index=0
 
-function setFace(el, item){
-  const img = el.querySelector('img')
-  const vid = el.querySelector('video')
+function createCard(item){
+ const el=document.createElement('div')
+ el.className='card'
 
-  if(item.type === 'video'){
-    img.style.display='none'
-    vid.style.display='block'
-
-    if(vid.src !== item.src){
-      vid.src = item.src
-    }
-
-    vid.play().catch(()=>{})
-  } else {
-    if(!vid.paused) vid.pause()
-    vid.style.display='none'
-    img.style.display='block'
-    img.src = item.src
-  }
+ if(item.type==='video'){
+  const v=document.createElement('video')
+  v.src=item.src
+  v.muted=true;v.loop=true;v.playsInline=true
+  el.appendChild(v)
+ }else{
+  const img=document.createElement('img')
+  img.src=item.src
+  el.appendChild(img)
+ }
+ return el
 }
 
-setFace(front,data[0])
-setFace(back,data[1])
-
-let rotation = 0
-let currentIndex = -1
+let cards=[]
 
 function render(){
-  card.style.transform = `rotateY(${rotation}deg)`
+ carousel.innerHTML=''
+ cards=[]
 
-  const index = Math.floor(rotation / 180)
-  if(index === currentIndex) return
-  currentIndex = index
+ for(let i=index-2;i<=index+2;i++){
+  if(!data[i]) continue
+  const card=createCard(data[i])
 
-  if(index % 2 === 0){
-    if(data[index]) setFace(front,data[index])
-    if(data[index+1]) setFace(back,data[index+1])
-  }else{
-    if(data[index]) setFace(back,data[index])
-    if(data[index+1]) setFace(front,data[index+1])
-  }
+  if(i===index) card.classList.add('center')
+  else if(i===index-1) card.classList.add('left')
+  else if(i===index+1) card.classList.add('right')
+  else if(i<index) card.classList.add('hiddenL')
+  else card.classList.add('hiddenR')
+
+  carousel.appendChild(card)
+  cards.push(card)
+ }
+
+ // autoplay center video
+ const centerCard=cards.find(c=>c.classList.contains('center'))
+ const vid=centerCard?.querySelector('video')
+ if(vid) vid.play().catch(()=>{})
 }
 
-let reachedEnd = false
-let inVideoSection = false
+function next(){if(index<TOTAL-1){index++;render()}}
+function prev(){if(index>0){index--;render()}}
 
-// smooth scroll-based rotation
-window.addEventListener('wheel',(e)=>{
-  const maxRotation = (TOTAL-1) * 180
+// wheel horizontal feel
+window.addEventListener('wheel',e=>{
+ if(Math.abs(e.deltaY)>5){
+  if(e.deltaY>0) next()
+  else prev()
+ }
+})
 
-  // allow entering video section ONLY after extra scroll
-  if(reachedEnd && e.deltaY > 20){
-    inVideoSection = true
-    document.getElementById('videos').scrollIntoView({behavior:'smooth'})
-    return
-  }
+// touch
+let startX=0
+window.addEventListener('touchstart',e=>startX=e.touches[0].clientX)
+window.addEventListener('touchend',e=>{
+ const dx=startX-e.changedTouches[0].clientX
+ if(Math.abs(dx)<30) return
+ if(dx>0) next()
+ else prev()
+})
 
-  // return from videos
-  if(inVideoSection && e.deltaY < 0){
-    inVideoSection = false
-    rotation = maxRotation - 1
-    render()
-    return
-  }
-
-  if(inVideoSection) return
-
-  e.preventDefault()
-
-  rotation += e.deltaY * 0.6
-
-  if(rotation < 0) rotation = 0
-
-  if(rotation >= maxRotation){
-    rotation = maxRotation
-    reachedEnd = true
-  } else {
-    reachedEnd = false
-  }
-
-  render()
-},{ passive:false })
-
-// touch support (smooth)
-let startY=0
-window.addEventListener('touchstart',e=>startY=e.touches[0].clientY)
-window.addEventListener('touchmove',e=>{
-  const currentY = e.touches[0].clientY
-  const delta = startY - currentY
-
-  const maxRotation = (TOTAL-1) * 180
-
-  // require extra swipe to go to videos
-  if(reachedEnd && delta > 30){
-    inVideoSection = true
-    document.getElementById('videos').scrollIntoView({behavior:'smooth'})
-    return
-  }
-
-  if(inVideoSection && delta < 0){
-    inVideoSection = false
-    rotation = maxRotation - 1
-    render()
-    return
-  }
-
-  if(inVideoSection) return
-
-  if(rotation < maxRotation){
-    e.preventDefault()
-  }
-
-  rotation += delta * 1.2
-  startY = currentY
-
-  if(rotation < 0) rotation = 0
-
-  if(rotation >= maxRotation){
-    rotation = maxRotation
-    reachedEnd = true
-  } else {
-    reachedEnd = false
-  }
-
-  render()
-},{ passive:false })
-
-console.assert(data.length===89,'slides issue');
+render()
 </script>
 
 </body>
