@@ -18,9 +18,9 @@ animation:bgMove 25s linear infinite;
 }
 @keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-5%,5%)}100%{transform:translate(0,0)}}
 
-.logoWrap{position:fixed;top:20px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:5}
+.logoWrap{position:fixed;top:4px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:5}
 .logo{width:min(49vw,294px)}
-.tagline{margin-top:6px;font-size:12px;opacity:.7;letter-spacing:.5px}
+.tagline{margin-top:22px;font-size:12px;opacity:.7;letter-spacing:.5px}
 
 .stage{height:100vh;display:flex;align-items:center;justify-content:center;perspective:1200px;position:relative;z-index:2}
 
@@ -38,7 +38,7 @@ animation:bgMove 25s linear infinite;
 
 .card::after{content:"";position:absolute;inset:0;box-shadow:0 20px 40px rgba(0,0,0,0.6);pointer-events:none}
 
-.hint{position:absolute;bottom:40px;font-size:14px;opacity:.6}
+.hint{position:absolute;bottom:56px;font-size:14px;opacity:.6}
 .nav{position:absolute;top:50%;transform:translateY(-50%);font-size:28px;opacity:.4;cursor:pointer}
 .leftNav{left:20px}
 .rightNav{right:20px}
@@ -68,11 +68,11 @@ animation:bgMove 25s linear infinite;
 <script>
 const TOTAL=89
 const data=Array.from({length:TOTAL},(_,i)=>{
- if(i===44) return {type:'video',src:'cancerday.mp4'}
- if(i===86) return {type:'video',src:'video86.mp4'}
- if(i===87) return {type:'video',src:'FDCI.mp4'}
- if(i===88) return {type:'video',src:'video88.mp4'}
- return {type:'image',src:`images/slide${i}.webp`}
+ if(i===44) return {type:'video',src:'./cancerday.mp4'}
+ if(i===86) return {type:'video',src:'./video86.mp4'}
+ if(i===87) return {type:'video',src:'./FDCI.mp4'}
+ if(i===88) return {type:'video',src:'./video88.mp4'}
+ return {type:'image',src:`./images/slide${i}.webp`}
 })
 
 const carousel=document.getElementById('carousel')
@@ -83,14 +83,21 @@ let cards=[]
 function createCard(item){
  const el=document.createElement('div')
  el.className='card'
+
  if(item.type==='video'){
   const v=document.createElement('video')
   v.src=item.src
-  v.muted=true;v.loop=true;v.playsInline=true
+  v.muted=true
+  v.loop=true
+  v.autoplay=true
+  v.playsInline=true
+  v.preload='auto'
+  v.style.objectFit='contain'
   el.appendChild(v)
  }else{
   const img=document.createElement('img')
   img.src=item.src
+  img.loading='lazy'
   el.appendChild(img)
  }
  return el
@@ -126,7 +133,7 @@ function render(){
 }
 
 function animate(){
- index += (targetIndex - index) * 0.08 /* smoother */
+ index += (targetIndex - index) * 0.06
  render()
  requestAnimationFrame(animate)
 }
@@ -163,8 +170,12 @@ carousel.addEventListener('touchmove',e=>{
  if(!dragging) return
  e.preventDefault()
 
- const dx=startX - e.touches[0].clientX
- targetIndex = startIndex + dx * 0.01
+ const currentX = e.touches[0].clientX
+ const dx = currentX - startX
+
+ targetIndex -= dx * 0.015
+ startX = currentX
+
  targetIndex = Math.max(0,Math.min(TOTAL-1,targetIndex))
 },{passive:false})
 
