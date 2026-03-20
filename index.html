@@ -9,7 +9,6 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#020617;color:#fff;overflow-x:hidden}
 
-/* BG */
 body::before{
 content:"";position:fixed;inset:0;z-index:0;
 background:
@@ -19,84 +18,35 @@ animation:bgMove 25s linear infinite;
 }
 @keyframes bgMove{0%{transform:translate(0,0)}50%{transform:translate(-5%,5%)}100%{transform:translate(0,0)}}
 
-.logoWrap{
-position:fixed;top:20px;left:50%;transform:translateX(-50%);
-display:flex;flex-direction:column;align-items:center;z-index:5;
-}
+.logoWrap{position:fixed;top:20px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:5}
+.logo{width:min(49vw,294px)}
+.tagline{margin-top:6px;font-size:12px;opacity:.7;letter-spacing:.5px}
 
-.logo{
-width:min(49vw,294px);
-}
+.stage{height:100vh;display:flex;align-items:center;justify-content:center;perspective:1200px;position:relative;z-index:2}
 
-.tagline{
-margin-top:6px;
-font-size:12px;
-opacity:0.7;
-letter-spacing:0.5px;
-}
+.carousel{display:flex;align-items:center;justify-content:center;position:relative;width:100%;height:min(70vh,420px);overflow:hidden;touch-action:none;cursor:grab}
+.carousel:active{cursor:grabbing}
 
-/* STAGE */
-.stage{
-height:100vh;display:flex;align-items:center;justify-content:center;
-perspective:1200px;position:relative;z-index:2;
-}
-
-/* CAROUSEL */
-.carousel{
-display:flex;align-items:center;justify-content:center;position:relative;
-width:100%;height:min(70vh,420px);
-overflow:hidden;
-touch-action:none; /* important for swipe */
-}
-
-.card{
-position:absolute;
-width:clamp(180px,70vw,252px);
-aspect-ratio:252/370;
-border-radius:14px;
-overflow:hidden;
-transition:all .5s cubic-bezier(.2,.8,.2,1);
-border:1px solid rgba(255,255,255,0.25);
-background:#000;
-}
-
-.card img,.card video{width:100%;height:100%;object-fit:cover}
+.card{position:absolute;width:clamp(180px,70vw,252px);aspect-ratio:252/370;border-radius:14px;overflow:hidden;transition:all .5s cubic-bezier(.2,.8,.2,1);border:1px solid rgba(255,255,255,0.25);background:#000}
+.card img,.card video{width:100%;height:100%;object-fit:cover;pointer-events:none}
 
 .center{transform:translateX(0) scale(1);z-index:3;opacity:1}
-.left{transform:translateX(-40vw) scale(.88) rotateY(12deg);z-index:2;opacity:.6}
-.right{transform:translateX(40vw) scale(.88) rotateY(-12deg);z-index:2;opacity:.6}
-.hiddenL{transform:translateX(-80vw) scale(.8);opacity:0}
-.hiddenR{transform:translateX(80vw) scale(.8);opacity:0}
+.left{transform:translateX(calc(-1 * min(220px, 28vw))) scale(.88) rotateY(12deg);z-index:2;opacity:.6}
+.right{transform:translateX(min(220px, 28vw)) scale(.88) rotateY(-12deg);z-index:2;opacity:.6}
+.hiddenL{transform:translateX(calc(-1 * min(420px, 60vw))) scale(.8);opacity:0}
+.hiddenR{transform:translateX(min(420px, 60vw)) scale(.8);opacity:0}
 
-/* shadow overlap */
-.card::after{
-content:"";position:absolute;inset:0;
-box-shadow:0 20px 40px rgba(0,0,0,0.6);
-pointer-events:none;
-}
+.card::after{content:"";position:absolute;inset:0;box-shadow:0 20px 40px rgba(0,0,0,0.6);pointer-events:none}
 
-.hint{
-position:absolute;bottom:40px;font-size:14px;opacity:.6;
-}
+.hint{position:absolute;bottom:40px;font-size:14px;opacity:.6}
+.nav{position:absolute;top:50%;transform:translateY(-50%);font-size:28px;opacity:.4;cursor:pointer}
+.leftNav{left:20px}
+.rightNav{right:20px}
 
-/* VIDEO SECTION */
-/* VIDEO SECTION */
-.video-section{
-position:relative;
-width:100%;
-padding:40px 20px;
-display:flex;
-gap:20px;
-overflow-x:auto;
-z-index:2;
-margin-top:20px;
-}
-.video-card{
-min-width:260px;background:#111;border-radius:12px;padding:10px;
-}
+.video-section{position:relative;width:100%;padding:40px 20px;display:flex;gap:20px;overflow-x:auto;z-index:2}
+.video-card{min-width:260px;background:#111;border-radius:12px;padding:10px}
 .video-card iframe{width:100%;height:150px;border-radius:8px}
 .video-title{text-align:center;font-size:12px;opacity:.7}
-
 </style>
 </head>
 <body>
@@ -107,22 +57,13 @@ min-width:260px;background:#111;border-radius:12px;padding:10px;
 </div>
 
 <div class="stage">
-
 <div class="carousel" id="carousel"></div>
 <div class="hint">← Swipe →</div>
-
+<div class="nav leftNav">‹</div>
+<div class="nav rightNav">›</div>
 </div>
 
-<div class="video-section">
-<div class="video-card">
-<iframe src="https://www.youtube.com/embed/KHx3EGSJoAs" allowfullscreen></iframe>
-<div class="video-title">School of Complete Professionals</div>
-</div>
-<div class="video-card">
-<iframe src="https://www.youtube.com/embed/jF9RMBgBD3M" allowfullscreen></iframe>
-<div class="video-title">Aaj Ki Rani</div>
-</div>
-</div>
+<div class="video-section" id="videoSection"></div>
 
 <script>
 const TOTAL=89
@@ -135,12 +76,11 @@ const data=Array.from({length:TOTAL},(_,i)=>{
 const carousel=document.getElementById('carousel')
 let index=0
 let targetIndex=0
-let isAnimating=false
+let cards=[]
 
 function createCard(item){
  const el=document.createElement('div')
  el.className='card'
-
  if(item.type==='video'){
   const v=document.createElement('video')
   v.src=item.src
@@ -154,13 +94,14 @@ function createCard(item){
  return el
 }
 
-let cards=[]
+// nav
+document.querySelector('.leftNav').onclick=()=> targetIndex=Math.max(0,targetIndex-1)
+document.querySelector('.rightNav').onclick=()=> targetIndex=Math.min(TOTAL-1,targetIndex+1)
 
 function render(){
  carousel.innerHTML=''
  cards=[]
-
- const current = Math.round(index)
+ const current=Math.round(index)
 
  for(let i=current-2;i<=current+2;i++){
   if(!data[i]) continue
@@ -182,56 +123,51 @@ function render(){
 }
 
 function animate(){
-  index += (targetIndex - index) * 0.1
-  render()
-  requestAnimationFrame(animate)
+ index += (targetIndex - index) * 0.12
+ const velocity = targetIndex - index
+ carousel.style.transform = `rotateX(${velocity*2}deg)`
+ render()
+ requestAnimationFrame(animate)
 }
-
 animate()
 
-function next(){if(targetIndex<TOTAL-1){targetIndex++}}
-function prev(){if(targetIndex>0){targetIndex--}}
+// wheel
+carousel.addEventListener('wheel',e=>{
+ e.preventDefault()
+ targetIndex += e.deltaY * 0.01
+ targetIndex=Math.max(0,Math.min(TOTAL-1,targetIndex))
+},{passive:false})
 
-
-// wheel horizontal feel
-window.addEventListener('wheel',e=>{
- if(Math.abs(e.deltaY)>5){
-  if(e.deltaY>0) targetIndex+=0.25
-  else targetIndex-=0.25
-
-  if(targetIndex<0) targetIndex=0
-  if(targetIndex>TOTAL-1) targetIndex=TOTAL-1
- }
-})
-
-// touch (fixed for proper swipe)
-let startX=0
-let isTouching=false
-
-carousel.addEventListener('touchstart',e=>{
-  isTouching=true
-  startX=e.touches[0].clientX
-})
-
+// touch
+let startX=0, touching=false
+carousel.addEventListener('touchstart',e=>{touching=true;startX=e.touches[0].clientX})
 carousel.addEventListener('touchmove',e=>{
-  if(!isTouching) return
-  e.preventDefault()
+ if(!touching) return
+ e.preventDefault()
+ const dx=startX-e.touches[0].clientX
+ targetIndex += dx*0.018
+ startX=e.touches[0].clientX
+ targetIndex=Math.max(0,Math.min(TOTAL-1,targetIndex))
+},{passive:false})
+carousel.addEventListener('touchend',()=>touching=false)
 
-  const currentX=e.touches[0].clientX
-  const dx=startX-currentX
+// YouTube control
+const videoSection=document.getElementById('videoSection')
+const isLocal = location.hostname.includes('localhost') || location.hostname.includes('127') || location.hostname.includes('sandbox')
 
-  targetIndex += dx*0.02 // better sensitivity
-  startX=currentX
-
-  if(targetIndex<0) targetIndex=0
-  if(targetIndex>TOTAL-1) targetIndex=TOTAL-1
-},{ passive:false })
-
-carousel.addEventListener('touchend',()=>{
-  isTouching=false
-})
-
-render()
+videoSection.innerHTML = isLocal ? `
+<div class="video-card"><div style="height:150px;display:flex;align-items:center;justify-content:center;opacity:.6">YouTube disabled in preview</div></div>
+<div class="video-card"><div style="height:150px;display:flex;align-items:center;justify-content:center;opacity:.6">YouTube disabled in preview</div></div>
+` : `
+<div class="video-card">
+<iframe src="https://www.youtube.com/embed/KHx3EGSJoAs" allowfullscreen></iframe>
+<div class="video-title">School of Complete Professionals</div>
+</div>
+<div class="video-card">
+<iframe src="https://www.youtube.com/embed/jF9RMBgBD3M" allowfullscreen></iframe>
+<div class="video-title">Aaj Ki Rani</div>
+</div>
+`
 </script>
 
 </body>
