@@ -46,6 +46,7 @@ perspective:1200px;position:relative;z-index:2;
 display:flex;align-items:center;justify-content:center;position:relative;
 width:100%;height:min(70vh,420px);
 overflow:hidden;
+touch-action:none; /* important for swipe */
 }
 
 .card{
@@ -203,16 +204,31 @@ window.addEventListener('wheel',e=>{
  }
 })
 
-// touch
+// touch (fixed for proper swipe)
 let startX=0
-window.addEventListener('touchstart',e=>startX=e.touches[0].clientX)
-window.addEventListener('touchmove',e=>{
- const dx=startX-e.touches[0].clientX
- targetIndex += dx*0.01
- startX = e.touches[0].clientX
+let isTouching=false
 
- if(targetIndex<0) targetIndex=0
- if(targetIndex>TOTAL-1) targetIndex=TOTAL-1
+carousel.addEventListener('touchstart',e=>{
+  isTouching=true
+  startX=e.touches[0].clientX
+})
+
+carousel.addEventListener('touchmove',e=>{
+  if(!isTouching) return
+  e.preventDefault()
+
+  const currentX=e.touches[0].clientX
+  const dx=startX-currentX
+
+  targetIndex += dx*0.02 // better sensitivity
+  startX=currentX
+
+  if(targetIndex<0) targetIndex=0
+  if(targetIndex>TOTAL-1) targetIndex=TOTAL-1
+},{ passive:false })
+
+carousel.addEventListener('touchend',()=>{
+  isTouching=false
 })
 
 render()
