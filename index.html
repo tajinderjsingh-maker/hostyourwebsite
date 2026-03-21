@@ -60,7 +60,7 @@ animation:bgMove 40s linear infinite}
 </div>
 
 <!-- background audio -->
-<audio id="bgAudio" src="media/audio.mp3" loop></audio>
+<audio id="bgAudio" src="audio.mp3" loop></audio>
 <div id="audioToggle" style="position:fixed;top:16px;right:16px;z-index:10;cursor:pointer;font-size:18px;opacity:.8">🔊</div>
 
 <script>
@@ -199,7 +199,11 @@ const audio=document.getElementById('bgAudio')
 const audioBtn=document.getElementById('audioToggle')
 
 function tryPlayAudio(){
- audio.play().catch(()=>{})
+ // autoplay workaround: start muted, then unmute
+ audio.muted = true
+ audio.play().then(()=>{
+   setTimeout(()=>{ audio.muted = false }, 500)
+ }).catch(()=>{})
 }
 
 // attempt autoplay
